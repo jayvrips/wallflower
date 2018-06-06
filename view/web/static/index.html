@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <title>Hello World</title>
-    <!--<script src="http://requirejs.org/docs/release/2.3.5/minified/require.js"></script>-->
+
     <script src="deps/react/umd/react.development.js"></script>
     <script src="deps/react-dom/umd/react-dom.development.js"></script>
-    <!--<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>-->
+    <script src="deps/redux.min.js"></script>
     <script src="js/main.js"></script>
   </head>
   <body>
@@ -15,7 +15,7 @@
 
       'use strict';
       ReactDOM.render(
-        React.createElement(hello, null, null),
+        React.createElement(User, null, null),
         document.getElementById('root')
       );
 

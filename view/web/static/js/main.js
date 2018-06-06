@@ -5,7 +5,24 @@
 //import ReactDOM from 'react-dom';
 
 
-class hello extends React.Component {
+const initialState = {
+    users: []
+}
+
+function wallflowerApp(state, action) {
+    if (typeof state === 'undefined') {
+        return initialState
+    }
+
+    return state
+}
+
+$().ready() {
+    const store = createStore(wallflowerApp)
+
+}
+
+class User extends React.Component {
     render() {
         return React.createElement("div", null, "blah");
     }
