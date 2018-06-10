@@ -1,10 +1,11 @@
 
 import os
 
-from werkzeug.wrappers import Request, Response
+#from werkzeug.wrappers import Request, Response
 from flask import Flask, send_from_directory, render_template
 
-from model.api.user import User
+from model.db import initialize
+from model.api.user import User, user_bp
 
 app = Flask(__name__, static_folder="/view/web/static", template_folder="view/web/static")
 
@@ -19,6 +20,9 @@ def serve(path):
 
 
 if __name__ == "__main__":
+    initialize()
+
+    app.register_blueprint(user_bp)
     app.run("0.0.0.0", 8000)
 
 

@@ -4,10 +4,15 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine('sqlite:///:memory:', echo=True)
-Session = sessionmaker(bind=engine)
-
 Base = declarative_base()
+Session = None
+
+def initialize():
+    global Session
+
+    engine = create_engine('sqlite:///wallflower.db', echo=True)
+    Session = sessionmaker(bind=engine)
+    Base.metadata.create_all(engine)
 
 class User(Base):
     __tablename__ = 'users'
@@ -21,9 +26,18 @@ class User(Base):
         return "<User(name='%s', fullname='%s', password='%s')>" % (
                              self.name, self.fullname, self.password)
 
+    def to_dict(self):
+        return {
+                   "id": self.id,
+                   "name": self.name,
+                   "fullname": self.fullname
+               }
+
 def get_users():
+    session = Session()
     users = session.query(User).order_by(User.id)
-    return dict(users)
+    
+    return users #[user.to_dict() for user in users]
 
 
 def commit(session):
@@ -33,7 +47,7 @@ def commit(session):
         session.rollback()
 
 if __name__ == "__main__":
-    Base.metadata.create_all(engine)
+    initialize()
 
     session = Session()
 

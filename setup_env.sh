@@ -14,6 +14,9 @@ python3 get-pip.py
 # sqlalchemy
 pip3 install sqlalchemy
 
+# flask
+pip3 install flask
+
 rm get-pip.py
 
 tar xzf view/web/static/deps.tgz -C view/web/static 
