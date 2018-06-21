@@ -2,37 +2,38 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World</title>
+    <title>Wallflower</title>
 
-    <script src="deps/react/umd/react.development.js"></script>
-    <script src="deps/react-dom/umd/react-dom.development.js"></script>
+    <script src="deps/react.development.js"></script>
+    <script src="deps/react-dom.development.js"></script>
+    <script src="deps/react-redux.js"></script>
+    <script src="deps/babel.js"></script>
     <script src="deps/redux.js"></script>
     <script src="deps/jquery-3.3.1.min.js"></script>
-    <script src="js/main.js"></script>
+    <script type="text/babel" src="js/routes.js"></script>
+    <!--<script type="text/babel" src="js/user.js"></script>
+    <script type="text/babel" src="js/main.js"></script>-->
   </head>
   <body>
     <div id="root"></div>
-    <script type="text/javascript">
+    <script type="text/babel">
 
       'use strict';
+      const {createStore} = Redux;
+/*
       ReactDOM.render(
-        React.createElement(User, null, null),
+        <User/>,
+        document.getElementById('root')
+      );
+*/
+      ReactDOM.render(
+        <Provider store={createStoreWithMiddleware(reducers)}>
+          <Router history={browserHistory} routes{routes} />
+        </Provider>,
         document.getElementById('root')
       );
 
     </script>
-    <!--
-      Note: this page is a great way to try React but it's not suitable for production.
-      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
-
-      To set up a production-ready React build environment, follow these instructions:
-      * https://reactjs.org/docs/add-react-to-a-new-app.html
-      * https://reactjs.org/docs/add-react-to-an-existing-app.html
-
-      You can also use React without JSX, in which case you can remove Babel:
-      * https://reactjs.org/docs/react-without-jsx.html
-      * https://reactjs.org/docs/cdn-links.html
-    -->
   </body>
 </html>
 

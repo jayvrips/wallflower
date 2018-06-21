@@ -7,8 +7,10 @@ from flask import Flask, send_from_directory, render_template
 from model.db import initialize
 from model.api.user import User, user_bp
 
-app = Flask(__name__, static_folder="/view/web/static", template_folder="view/web/static")
+app = Flask(__name__)
+#app = Flask(__name__, static_folder="/view/web/static", template_folder="view/web/static")
 
+'''
 @app.route("/", defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
@@ -17,6 +19,7 @@ def serve(path):
     else:
         return send_from_directory('view/web/static', "index.html")
         #return render_template("index.html")
+'''
 
 
 if __name__ == "__main__":
