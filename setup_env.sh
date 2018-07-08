@@ -16,6 +16,7 @@ pip3 install sqlalchemy
 
 # flask
 pip3 install flask
+pip3 install flask-cors
 
 rm get-pip.py
 
