@@ -1,9 +1,9 @@
 
 from sqlalchemy import Column, Integer, String
 
-from model.db import Base, get_session
+from model.db import Base, get_session, commit
 
-class User(Base):
+class DbUser(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
@@ -22,11 +22,12 @@ class User(Base):
                    "fullname": self.fullname
                }
 
-def get_users():
-    session = get_session()
-    users = session.query(User).order_by(User.id)
-    
-    return users
+
+    def from_dict(self, user_dict):
+        self.name = user_dict["name"]
+        self.fullname = user_dict["fullname"]
+        if "password" in user_dict:
+            self.password = user_dict["password"]
 
 
 

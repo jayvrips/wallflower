@@ -21,15 +21,12 @@ def commit(session):
         session.commit()
     except:
         session.rollback()
+        raise
 
 if __name__ == "__main__":
     initialize()
 
     session = Session()
-
-    user = User(name='ed', fullname='Ed Jones', password='edspassword')
-    session.add(user)
-    commit(session)
 
     for instance in session.query(User).order_by(User.id):
         print(instance.name, instance.fullname)

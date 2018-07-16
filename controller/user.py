@@ -3,8 +3,7 @@ import json
 
 from flask import Blueprint, jsonify, Response, request
 from model import db
-import model.user
-from model.user import get_users
+from model.user import DbUser
 
 user_bp = Blueprint('user', __name__)
 
@@ -18,24 +17,44 @@ user_bp = Blueprint('user', __name__)
 class User:
     @user_bp.route('/users', methods=['GET'])
     def get_users():
-        users = get_users()
-        resp = jsonify([user.to_dict() for user in users])
+        session = db.get_session()
+        db_users = session.query(DbUser).order_by(DbUser.id)
+        users = {}
+        for db_user in db_users:
+            users[db_user.id] = db_user.to_dict()    
+
+        resp = jsonify(users)
+        #resp = jsonify([user.to_dict() for user in users])
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
-        
+
+    @user_bp.route('/users/<int:user_id>', methods=['GET'])
+    def get_user():
+        session = db.get_session()
+        db_user = session.query(DbUser).filter_by(id=user_id).first()
+
+        resp = jsonify(user.to_dict())
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
+
     @user_bp.route('/users/<int:user_id>', methods=['PUT'])
     def put_users(user_id):
-        data = request.get_json()
-        user = model.user.User(name=data["name"], fullname=data["fullname"], password=data["password"])
-        s = db.get_session()
-        s.add(user)
-        db.commit(s)
+        user_data = request.get_json()
 
-        resp = Response("awesome")
+        session = db.get_session()
+        print("user_data: ".format(user_data))
+        print("user_id: ".format(user_id))
+        print("user_id type: ".format(type(user_id)))
+        db_user = session.query(DbUser).filter_by(id=user_id).first()
+        print("user: ".format(db_user))
+        db_user.from_dict(user_data)
+        db.commit(session)
+
+        resp = jsonify(db_user.to_dict())
         resp.headers["Allow"] = "PUT,POST,OPTIONS"
         resp.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
-        
+
 
 
