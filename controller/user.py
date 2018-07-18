@@ -24,7 +24,6 @@ class User:
             users[db_user.id] = db_user.to_dict()    
 
         resp = jsonify(users)
-        #resp = jsonify([user.to_dict() for user in users])
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
 
@@ -42,11 +41,7 @@ class User:
         user_data = request.get_json()
 
         session = db.get_session()
-        print("user_data: ".format(user_data))
-        print("user_id: ".format(user_id))
-        print("user_id type: ".format(type(user_id)))
         db_user = session.query(DbUser).filter_by(id=user_id).first()
-        print("user: ".format(db_user))
         db_user.from_dict(user_data)
         db.commit(session)
 
