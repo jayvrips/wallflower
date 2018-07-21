@@ -32,8 +32,33 @@ class User:
         session = db.get_session()
         db_user = session.query(DbUser).filter_by(id=user_id).first()
 
-        resp = jsonify(user.to_dict())
+        resp = jsonify(db_user.to_dict())
         resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
+
+    @user_bp.route('/user', methods=['OPTIONS'])
+    def option_user():
+        resp = Response();
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        resp.headers["Allow"] = "POST,OPTIONS"
+        del resp.headers['Content-Type']
+        return resp
+
+    @user_bp.route('/user', methods=['POST'])
+    def post_user():
+        user_data = request.get_json()
+
+        session = db.get_session()
+        db_user = DbUser(name=user_data["name"],
+                         fullname=data["fullname"],
+                         password=data["password"])
+        session.add(user)
+        commit(session)
+
+        resp = jsonify(db_user.to_dict())
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        resp.headers["Allow"] = "POST,OPTIONS"
+        resp.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
         return resp
 
     @user_bp.route('/users/<int:user_id>', methods=['PUT'])
@@ -46,9 +71,9 @@ class User:
         db.commit(session)
 
         resp = jsonify(db_user.to_dict())
+        resp.headers['Access-Control-Allow-Origin'] = '*'
         resp.headers["Allow"] = "PUT,POST,OPTIONS"
         resp.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
-        resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
 
 
