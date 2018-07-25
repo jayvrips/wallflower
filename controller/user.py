@@ -41,7 +41,7 @@ class User:
         resp = Response();
         resp.headers['Access-Control-Allow-Origin'] = '*'
         resp.headers["Allow"] = "POST,OPTIONS"
-        del resp.headers['Content-Type']
+        resp.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
         return resp
 
     @user_bp.route('/user', methods=['POST'])
@@ -50,10 +50,10 @@ class User:
 
         session = db.get_session()
         db_user = DbUser(name=user_data["name"],
-                         fullname=data["fullname"],
-                         password=data["password"])
-        session.add(user)
-        commit(session)
+                         fullname=user_data["fullname"],
+                         password=user_data["password"])
+        session.add(db_user)
+        db.commit(session)
 
         resp = jsonify(db_user.to_dict())
         resp.headers['Access-Control-Allow-Origin'] = '*'
