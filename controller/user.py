@@ -4,15 +4,16 @@ import json
 from flask import Blueprint, jsonify, Response, request
 from model import db
 from model.user import DbUser
+from model.profile import DbProfile
 
 user_bp = Blueprint('user', __name__)
 
-'''
- response.headers["Allow"] = "HEAD,GET,PUT,POST,DELETE,OPTIONS"
-  response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
-  #Dont need 44...i think because we have 36
-  response.headers["Access-Control-Allow-Origin"] = "*"
-'''
+
+ # response.headers["Allow"] = "HEAD,GET,PUT,POST,DELETE,OPTIONS"
+ #  response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
+ #  #Dont need 44...i think because we have 36
+ #  response.headers["Access-Control-Allow-Origin"] = "*"
+
 
 class User:
     @user_bp.route('/users', methods=['GET'])
@@ -21,7 +22,7 @@ class User:
         db_users = session.query(DbUser).order_by(DbUser.id)
         users = {}
         for db_user in db_users:
-            users[db_user.id] = db_user.to_dict()    
+            users[db_user.id] = db_user.to_dict()
 
         resp = jsonify(users)
         resp.headers['Access-Control-Allow-Origin'] = '*'
@@ -52,7 +53,11 @@ class User:
         db_user = DbUser(name=user_data["name"],
                          fullname=user_data["fullname"],
                          password=user_data["password"])
+
         session.add(db_user)
+        db.commit(session)
+        db_profile = DbProfile(user_id = db_user.id)
+        session.add(db_profile)
         db.commit(session)
 
         resp = jsonify(db_user.to_dict())
@@ -75,6 +80,3 @@ class User:
         resp.headers["Allow"] = "PUT,POST,OPTIONS"
         resp.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
         return resp
-
-
-
