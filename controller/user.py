@@ -67,7 +67,7 @@ class User:
         return resp
 
     @user_bp.route('/users/<int:user_id>', methods=['PUT'])
-    def put_users(user_id):
+    def put_user(user_id):
         user_data = request.get_json()
 
         session = db.get_session()

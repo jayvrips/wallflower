@@ -20,6 +20,7 @@ class DbUser(Base):
     def to_dict(self):
         return {
                    "id": self.id,
+                   "profile_id": self.profile.id,
                    "name": self.name,
                    "fullname": self.fullname
                }
