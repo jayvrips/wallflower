@@ -12,11 +12,13 @@ class DbProfile(Base):
     summary = Column(String, nullable=True)
     height = Column(Integer, nullable=True)
     networth = Column(Integer, nullable=True)
+    # add username attribute
 
     def to_dict(self):
         return {
                    "id": self.id,
                    "user_id": self.user.id,
+                   "user_fullname": self.user.fullname,
                    "summary": self.summary,
                    "height": self.height,
                    "networth": self.networth
