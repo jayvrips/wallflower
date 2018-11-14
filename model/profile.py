@@ -12,6 +12,7 @@ class DbProfile(Base):
     summary = Column(String, nullable=True)
     height = Column(Integer, nullable=True)
     networth = Column(Integer, nullable=True)
+    message = relationship("DbMessage", uselist=False, back_populates='profile')
     # add username attribute
 
     def to_dict(self):
