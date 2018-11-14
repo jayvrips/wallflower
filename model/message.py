@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy orm import relationship
+from sqlalchemy.orm import relationship
 
 from model.db import Base, get_session, commit
 
@@ -9,7 +9,7 @@ class DbMessage(Base):
     id = Column(Integer, primary_key=True)
     sender_id = Column(Integer, ForeignKey('profiles.id'))
     recipient_id = Column(Integer, ForeignKey('profiles.id'))
-    # profile = relationship("DbUser", back_populates='profile')
+    profile = relationship("DbUser", back_populates='profile')
     text = Column(String, nullable=False)
 
     def to_dict(self):
@@ -24,3 +24,6 @@ class DbMessage(Base):
         self.sender_id = message_dict["sender_id"]
         self.recipient_id = message_dict["recipient_id"]
         self.text = message_dict["text"]
+
+    # db.create_all()
+    # db.session.commit()
