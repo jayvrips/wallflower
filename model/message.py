@@ -9,14 +9,16 @@ class DbMessage(Base):
     id = Column(Integer, primary_key=True)
     sender_id = Column(Integer, ForeignKey('profiles.id'))
     recipient_id = Column(Integer, ForeignKey('profiles.id'))
-    profile = relationship("DbUser", back_populates='profile')
+    sender = relationship("DbProfile", foreign_keys=[sender_id])
+    recipient = relationship("DbProfile", foreign_keys=[recipient_id])
     text = Column(String, nullable=False)
 
     def to_dict(self):
         return {
                     "id": self.id,
-                    "sender_id": self.sender_id,
-                    "recipient_id": self.recipient_id,
+                    "sender_id": self.profile.id,
+                    "sender_fullname": self.profile.user_fullname,
+                    "recipient_id": self.profile.id,
                     "text": self.text
                }
 
