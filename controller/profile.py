@@ -4,6 +4,7 @@ import json
 from flask import Blueprint, jsonify, Response, request
 from model import db
 from model.profile import DbProfile
+from model.message import DbMessage
 
 profile_bp = Blueprint('profile', __name__)
 
@@ -35,6 +36,18 @@ class Profile:
             resp.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
             return resp
 
+        @profile_bp.route('/profile/<int:profile_id>/chats', methods=['GET'])
+        def get_profile_chats(profile_id):
+            session = db.get_session()
+            db_profile = session.query(DbProfile).filter_by(id=profile_id).first()
+            db_profile_chats = session.query(DbMessage).filter_by(sender_id=profile_id).all()
+            profile_chats = {}
+            for db_profile_chat in db_profile_chats:
+                profile_chats[db_profile_chat.id] = db_profile_chat.to_dict()
+
+            resp = jsonify(profile_chats)
+            resp.headers['Access-Control-Allow-Origin'] = '*'
+            return resp
 
         @profile_bp.route('/profiles', methods=['GET'])
         def get_profiles():

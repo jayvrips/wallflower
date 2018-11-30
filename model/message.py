@@ -16,9 +16,9 @@ class DbMessage(Base):
     def to_dict(self):
         return {
                     "id": self.id,
-                    "sender_id": self.profile.id,
-                    "sender_fullname": self.profile.user_fullname,
-                    "recipient_id": self.profile.id,
+                    "sender_id": self.sender_id,
+                    # "sender_fullname": self.sender.user_fullname,
+                    "recipient_id": self.sender_id,
                     "text": self.text
                }
 
