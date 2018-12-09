@@ -36,6 +36,15 @@ class Profile:
             resp.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
             return resp
 
+        @profile_bp.route('/profiles/<int:profile_id>', methods=['GET'])
+        def get_profile(profile_id):
+            session = db.get_session()
+            db_profile = session.query(DbProfile).filter_by(id=profile_id).first()
+
+            resp = jsonify(db_profile.to_dict())
+            resp.headers['Access-Control-Allow-Origin'] = '*'
+            return resp
+
         @profile_bp.route('/profile/<int:profile_id>/chats', methods=['GET'])
         def get_profile_chats(profile_id):
             session = db.get_session()
@@ -50,6 +59,8 @@ class Profile:
             return resp
 
         @profile_bp.route('/profiles', methods=['GET'])
+        # add param to endpoint so that we can filter the profiles to return all their attributes/data
+        # or just a summary ... do a join on profiel & details table for all; just use profile table for summary
         def get_profiles():
             session = db.get_session()
             db_profiles = session.query(DbProfile).order_by(DbProfile.id)
