@@ -45,7 +45,7 @@ class Profile:
             resp.headers['Access-Control-Allow-Origin'] = '*'
             return resp
 
-        @profile_bp.route('/profile/<int:profile_id>/chats', methods=['GET'])
+        @profile_bp.route('/chats/<int:profile_id>', methods=['GET'])
         def get_profile_chats(profile_id):
             session = db.get_session()
             db_profile = session.query(DbProfile).filter_by(id=profile_id).first()
