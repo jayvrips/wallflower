@@ -5,6 +5,8 @@ from flask import Blueprint, jsonify, Response, request
 from model import db
 from model.profile import DbProfile
 from model.message import DbMessage
+from sqlalchemy import asc, desc
+
 
 profile_bp = Blueprint('profile', __name__)
 
@@ -49,9 +51,27 @@ class Profile:
         def get_profile_chats(profile_id):
             session = db.get_session()
             db_profile = session.query(DbProfile).filter_by(id=profile_id).first()
-            db_profile_chats = session.query(DbMessage).filter_by(sender_id=profile_id).all()
-            profile_chats = {}
+
+            # ORDER BY DOES NOT SEEM TO BE WORKING, NOR DISTINCT
+            # new_db_profile_chats = session.query(DbMessage).filter_by(
+            #     sender_id=profile_id).distinct(DbMessage.recipient_id).all()
+            db_profile_chats = session.query(DbMessage).filter_by(
+                sender_id=profile_id).order_by(asc(DbMessage.recipient_id)).all()
+
+            unique_recipients = []
+            new_db_profile_chats = []
             for db_profile_chat in db_profile_chats:
+                if not unique_recipients:
+                    unique_recipients.append(db_profile_chat.recipient_id)
+                    new_db_profile_chats.append(db_profile_chat)
+
+                if db_profile_chat.recipient_id != unique_recipients[-1]:
+                    unique_recipients.append(db_profile_chat.recipient_id)
+                    new_db_profile_chats.append(db_profile_chat)
+
+            profile_chats = {}
+            for db_profile_chat in new_db_profile_chats:
+                print(db_profile_chat.recipient_id)
                 profile_chats[db_profile_chat.id] = db_profile_chat.to_dict()
 
             resp = jsonify(profile_chats)

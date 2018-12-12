@@ -17,14 +17,16 @@ class DbMessage(Base):
         return {
                     "id": self.id,
                     "sender_id": self.sender_id,
-                    # "sender_fullname": self.sender.user_fullname,
-                    "recipient_id": self.sender_id,
+                    #"sender_fullname": self.sender.user_fullname,
+                    "recipient_id": self.recipient_id,
+                    "recipient_fullname": self.recipient.user.fullname,
                     "text": self.text
                }
 
     def from_dict(self, message_dict):
         self.sender_id = message_dict["sender_id"]
         self.recipient_id = message_dict["recipient_id"]
+        self.recipient.user.fullname: message_dict["recipient_fullname"]
         self.text = message_dict["text"]
 
     # db.create_all()
