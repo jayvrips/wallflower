@@ -5,7 +5,8 @@ from flask import Blueprint, jsonify, Response, request
 from model import db
 from model.profile import DbProfile
 from model.message import DbMessage
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, and_
+from sqlalchemy.orm import aliased
 
 
 profile_bp = Blueprint('profile', __name__)
@@ -75,6 +76,44 @@ class Profile:
                 profile_chats[db_profile_chat.id] = db_profile_chat.to_dict()
 
             resp = jsonify(profile_chats)
+            resp.headers['Access-Control-Allow-Origin'] = '*'
+            return resp
+
+        @profile_bp.route('/chathistory/<int:profile_id>/<int:recipient_id>', methods=['GET'])
+        def get_chat_history(profile_id, recipient_id):
+            print("*****got here!!!*")
+            session = db.get_session()
+
+            # msgalias = aliased(DbMessage)
+            # msgs = session.query(DbMessage).filter_by(
+            #     sender_id=profile_id).filter_by(
+            #     recipient_id=recipient_id).join(msgalias, DbMessage.id).filter_by(
+            #     recipient_id=profile_id).filter_by(sender_id=recipient_id).all()
+
+            # print("$$$$$$$")
+            # print(msgs)
+            db_sent_chats = session.query(DbMessage).filter_by(
+                sender_id=profile_id).filter_by(recipient_id=recipient_id).subquery()
+
+            dalias = aliased(DbMessage, db_sent_chats)
+            q = session.query(dalias, DbMessage).filter_by(
+                sender_id=recipient_id).filter_by(recipient_id=profile_id)
+
+            nn = session.query(db_sent_chats).filter_by(
+                sender_id=recipient_id).filter_by(recipient_id=profile_id)
+
+            oo = q.all()
+
+            db_received_chats = session.query(DbMessage).filter_by(
+                sender_id=recipient_id).filter_by(recipient_id=profile_id).all()
+
+
+
+            chat_history = {}
+            for chat in oo:
+                chat_history[chat.id] = chat.to_dict()
+
+            resp = jsonify(chat_history)
             resp.headers['Access-Control-Allow-Origin'] = '*'
             return resp
 
