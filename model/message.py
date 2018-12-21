@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+from datetime import datetime
 
 from model.db import Base, get_session, commit
 
@@ -12,12 +13,13 @@ class DbMessage(Base):
     sender = relationship("DbProfile", foreign_keys=[sender_id])
     recipient = relationship("DbProfile", foreign_keys=[recipient_id])
     text = Column(String, nullable=False)
+    created_date = Column(DateTime, default=datetime.utcnow())
 
     def to_dict(self):
         return {
                     "id": self.id,
                     "sender_id": self.sender_id,
-                    #"sender_fullname": self.sender.user_fullname,
+                    "sender_fullname": self.sender.user.fullname,
                     "recipient_id": self.recipient_id,
                     "recipient_fullname": self.recipient.user.fullname,
                     "text": self.text
@@ -28,6 +30,3 @@ class DbMessage(Base):
         self.recipient_id = message_dict["recipient_id"]
         self.recipient.user.fullname: message_dict["recipient_fullname"]
         self.text = message_dict["text"]
-
-    # db.create_all()
-    # db.session.commit()
