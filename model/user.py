@@ -1,10 +1,15 @@
 
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
 from model.db import Base, get_session, commit
+from flask_login import UserMixin
 
-class DbUser(Base):
+#
+# class User(UserMixin):
+
+
+class DbUser(Base, UserMixin):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
@@ -12,10 +17,32 @@ class DbUser(Base):
     fullname = Column(String)
     password = Column(String)
     profile = relationship("DbProfile", uselist=False, back_populates='user')
+    is_active = Column(Boolean, default=False)
+
+    def is_active(self):
+        # Here you should write whatever the code is
+        # that checks the database if your user is active
+        return self.active
+
+    def is_anonymous(self):
+        return False
+
+    def is_authenticated(self):
+        return True
 
     def __repr__(self):
         return "<User(name='%s', fullname='%s', password='%s')>" % (
                              self.name, self.fullname, self.password)
+
+
+
+    # @login_manager.user_loader
+    # def load_user(user_id):
+    #     # session = db.get_session()
+    #     # db_user = session.query(DbUser).filter_by(id=user_id).first()
+    #     # return db_user
+    #     return DbUser.query.get(int(user_id))
+
 
     def to_dict(self):
         return {
