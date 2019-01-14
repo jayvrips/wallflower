@@ -1,7 +1,7 @@
 
 import json
 
-from flask import Blueprint, jsonify, Response, request
+from flask import Blueprint, jsonify, Response, request, session
 from model import db
 from model.user import DbUser
 from model.profile import DbProfile
@@ -29,6 +29,8 @@ class User:
             users[db_user.id] = db_user.to_dict()
 
         resp = jsonify(users)
+        f = session
+        print("session valye !!!!!!!!!!!!!!!!!!!!1 %s" % f['user_id'])
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
 
@@ -37,17 +39,23 @@ class User:
         user_data = request.get_json()
         print("User data is this!!!!!!!!!!!!!!!!!!!: %s" % user_data)
 
+
         session = db.get_session()
         db_user = session.query(DbUser).filter_by(name=user_data['name']).first()
 
+        print("------------user minxin stuff %s" % db_user.is_anonymous)
+
         if db_user.password == user_data['password']:
-            db_user.is_active = True
+            # db_user.active = True
             db.commit(session)
-            import pdb;
-            pdb.set_trace()
+            # import pdb;
+            # pdb.set_trace()
             login_user(db_user)
             resp = jsonify(db_user.to_dict())
             print("You logged in!!!!!!!!!!!!!!!!!!!!!!!!")
+            f = session
+            session['user_id'] = db_user.id
+            print("session valye !!!!!!!!!!!!!!!!!!!!1 %s" % f['user_id'])
             resp.headers['Access-Control-Allow-Origin'] = '*'
             resp.headers["Allow"] = "POST,OPTIONS"
             resp.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"

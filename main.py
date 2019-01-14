@@ -61,13 +61,13 @@ def seed_msg_db():
 
 @login_manager.user_loader
 def load_user(user_id):
-    import pdb;
-    pdb.set_trace()
-    print("got in here!!!!")
+    # import pdb;
+    # pdb.set_trace()
+    print("got in here!!!!!!!!!!!!!!!!!!!")
     session = db.get_session()
     u = session.query(DbUser).filter_by(id=user_id).first()
-    print("ran this!!!!!!!!!!!!")
-    return u
+    print("ran this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    return u.id
     # return DbUser.query.get(int(user_id))
 
 
