@@ -6,7 +6,6 @@ from model import db
 from model.user import DbUser
 from model.profile import DbProfile
 
-from flask_login import login_user, login_required, current_user
 
 user_bp = Blueprint('user', __name__)
 
@@ -19,9 +18,7 @@ user_bp = Blueprint('user', __name__)
 
 class User:
     @user_bp.route('/users', methods=['GET'])
-    @login_required
     def get_users():
-        print("The curerent user is: %s" % current_user.name)
         session = db.get_session()
         db_users = session.query(DbUser).order_by(DbUser.id)
         users = {}
@@ -29,48 +26,11 @@ class User:
             users[db_user.id] = db_user.to_dict()
 
         resp = jsonify(users)
-        f = session
-        print("session valye !!!!!!!!!!!!!!!!!!!!1 %s" % f['user_id'])
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
 
-    @user_bp.route('/login', methods=['POST'])
-    def login():
-        user_data = request.get_json()
-        print("User data is this!!!!!!!!!!!!!!!!!!!: %s" % user_data)
-
-
-        session = db.get_session()
-        db_user = session.query(DbUser).filter_by(name=user_data['name']).first()
-
-        print("------------user minxin stuff %s" % db_user.is_anonymous)
-
-        if db_user.password == user_data['password']:
-            # db_user.active = True
-            db.commit(session)
-            # import pdb;
-            # pdb.set_trace()
-            login_user(db_user)
-            resp = jsonify(db_user.to_dict())
-            print("You logged in!!!!!!!!!!!!!!!!!!!!!!!!")
-            f = session
-            session['user_id'] = db_user.id
-            print("session valye !!!!!!!!!!!!!!!!!!!!1 %s" % f['user_id'])
-            resp.headers['Access-Control-Allow-Origin'] = '*'
-            resp.headers["Allow"] = "POST,OPTIONS"
-            resp.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
-
-            return resp
-        # session = db.get_session()
-        # db_user = session.query(DbUser).filter_by(name='cyp').first()
-        # login_user(db_user)
-        # return "You logged in!"
-
-
-
     @user_bp.route('/users/<int:user_id>', methods=['GET'])
     def get_user():
-    # def load_user(user_id):
         session = db.get_session()
         db_user = session.query(DbUser).filter_by(id=user_id).first()
 
