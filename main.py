@@ -1,16 +1,18 @@
 
 import os
-# from flask import Flask, send_from_directory, render_template
+from flask import Flask, send_from_directory, render_template
 from flask_cors import CORS
 
 from controller.user import User, user_bp
 from controller.profile import Profile, profile_bp
 from controller.message import Message, message_bp
+from controller.like import Like, like_bp
 
 from model import db
 from model.user import DbUser
 from model.profile import DbProfile
 from model.message import DbMessage
+from model.like import DbLike
 
 
 app = Flask(__name__)
@@ -54,14 +56,36 @@ def seed_msg_db():
         db.commit(session)
         session.commit()
 
-if __name__ == "__main__":
-    db.initialize(needs_drop=True)
+def seed_like_db():
+    like_data = [
+        [1, 2],
+        [3, 2],
+        [2, 1],
+        [3, 1],
+        [1, 3],
+        [1, 3]
+    ]
 
-    app.register_blueprint(user_bp)
-    app.register_blueprint(profile_bp)
-    app.register_blueprint(message_bp)
+    for data in like_data:
+        session = db.get_session()
+        db_like = DbLike(sender_id=data[0],
+                        recipient_id=data[1]
+                        )
+        session.add(db_like)
+        db.commit(session)
+        session.commit()
+
+
+if __name__ == "__main__":
+    db.initialize(needs_drop=False)
+
+    # app.register_blueprint(user_bp)
+    # app.register_blueprint(profile_bp)
+    # app.register_blueprint(message_bp)
+    # app.register_blueprint(like_bp)
 
     seed_user_db()
     seed_msg_db()
+    seed_like_db()
 
     app.run("0.0.0.0", 8000)

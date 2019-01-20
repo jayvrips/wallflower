@@ -7,6 +7,7 @@ from model.profile import DbProfile
 from model.message import DbMessage
 from sqlalchemy import asc, desc, and_, or_
 from sqlalchemy.orm import aliased
+from model.like import DbLike
 
 
 profile_bp = Blueprint('profile', __name__)
