@@ -38,6 +38,7 @@ class Like:
 
     @like_bp.route('/likes/<int:profile_id>', methods=['GET'])
     def get_profile_likes(profile_id):
+        print('Called this like get -----------------------')
         session = db.get_session()
         db_profile = session.query(DbProfile).filter_by(id=profile_id).first()
         db_profile_likes = session.query(DbLike).filter_by(

@@ -77,15 +77,17 @@ def seed_like_db():
 
 
 if __name__ == "__main__":
-    db.initialize(needs_drop=False)
+    needs_drop = False
+    db.initialize(needs_drop=needs_drop)
 
-    # app.register_blueprint(user_bp)
-    # app.register_blueprint(profile_bp)
-    # app.register_blueprint(message_bp)
-    # app.register_blueprint(like_bp)
+    app.register_blueprint(user_bp)
+    app.register_blueprint(profile_bp)
+    app.register_blueprint(message_bp)
+    app.register_blueprint(like_bp)
 
-    seed_user_db()
-    seed_msg_db()
-    seed_like_db()
+    if needs_drop:
+        seed_user_db()
+        seed_msg_db()
+        seed_like_db()
 
     app.run("0.0.0.0", 8000)
