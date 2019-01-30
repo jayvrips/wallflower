@@ -1,11 +1,12 @@
 
 import json
 
-from flask import Blueprint, jsonify, Response, request, session
+from flask import Blueprint, jsonify, Response, request, session, redirect
 from model import db
 from model.user import DbUser
 from model.profile import DbProfile
 
+from flask_login import login_user, login_required, current_user
 
 user_bp = Blueprint('user', __name__)
 
@@ -18,6 +19,7 @@ user_bp = Blueprint('user', __name__)
 
 class User:
     @user_bp.route('/users', methods=['GET'])
+    @login_required
     def get_users():
         session = db.get_session()
         db_users = session.query(DbUser).order_by(DbUser.id)
@@ -66,6 +68,32 @@ class User:
         resp.headers["Allow"] = "POST,OPTIONS"
         resp.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
         return resp
+
+    @user_bp.route('/login', methods=['GET', 'POST'])
+    def login():
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        user_data = request.get_json()
+        if request.method == 'POST':
+            #TODO: verify creds correctly
+            if user_data['fullname'] == 'curt vr':
+                # user = User(request.form['username'])
+                session = db.get_session()
+                user = session.query(DbUser).filter_by(fullname='curt vr').first()
+                user.is_authenticated = True
+                user.is_active = True
+                try:
+                    login_user(user)
+                    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                except:
+                    # log.tb()
+                    raise ERROR("error")
+                print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+                print("User logged in as: %s" % current_user.fullname, current_user.is_authenticated, current_user.is_active)
+                # return "cool"
+                return redirect("http://0.0.0.0:8000/profiles")
+            #TODO: else indicate login failure in login.html
+        # return render_template('login.html')
+        return "cool"
 
     @user_bp.route('/users/<int:user_id>', methods=['PUT'])
     def put_user(user_id):

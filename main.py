@@ -14,10 +14,28 @@ from model.profile import DbProfile
 from model.message import DbMessage
 from model.like import DbLike
 
+from flask_login import LoginManager, login_required, login_user, current_user, logout_user
+
 
 app = Flask(__name__)
 CORS(app)
 app.secret_key = b'\x06\x9fT\x18\xbc]Q\x9d\xa5!~-\xe5\xea^\x0f\x8fo\xa7Yx\xd6\xbb)'
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    try:
+        #TODO: fetch user from db
+        # return User.get(user_id)
+        session = db.get_session()
+        db_user = session.query(DbUser).filter_by(id=user_id).first()
+        return db_user
+    except:
+        raise ERROR("error")
+    #TODO: if invalid ID:
+    return None
 
 
 def seed_user_db():
@@ -77,7 +95,7 @@ def seed_like_db():
 
 
 if __name__ == "__main__":
-    needs_drop = False
+    needs_drop = True
     db.initialize(needs_drop=needs_drop)
 
     app.register_blueprint(user_bp)
